@@ -1,10 +1,11 @@
 """Anomaly detection + signature tagging (specsheet §6.1). Pure functions."""
 
 import statistics
+from pathlib import Path
 
 import yaml
 
-RULES_PATH = __file__.replace("core/anomaly.py", "data/rules.yaml")
+RULES_PATH = Path(__file__).resolve().parents[1] / "data" / "rules.yaml"
 
 
 def load_rules():

@@ -53,6 +53,7 @@ jarvis/
 make setup            # create venv, pip install -e backend, npm ci in frontend
 cp .env.example .env
 cp frontend/.env.local.example frontend/.env.local
+# Windows: .\setup.ps1, then Copy-Item the two .env.example files
 
 # Develop
 make dev              # api on :8000 (reload) + web on :3000

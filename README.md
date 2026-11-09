@@ -45,6 +45,28 @@ make dev          # api on :8000, web on :3000 (two terminals: make api / make w
 docker compose up --build
 ```
 
+On Windows, `make` is not required. Run the PowerShell setup script from the
+repository root:
+
+```powershell
+.\setup.ps1
+Copy-Item .env.example .env
+Copy-Item frontend\.env.local.example frontend\.env.local
+```
+
+If PowerShell blocks local scripts, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+Start the services in two PowerShell terminals:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000 --app-dir backend
+Push-Location frontend; npm run dev; Pop-Location
+```
+
 Then open http://localhost:3000, go to Sources, and start the simulator
 (`db_pool_exhaustion`, 5× or 10×). A P1 incident appears with root cause
 `postgres-primary`.
