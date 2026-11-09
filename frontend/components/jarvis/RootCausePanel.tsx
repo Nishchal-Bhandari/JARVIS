@@ -14,6 +14,15 @@ export function RootCausePanel({ rootCause }: { rootCause: RootCause }) {
           <span className="text-muted">{rootCause.label}</span>
           <ConfidenceMeter confidence={rootCause.confidence} />
         </div>
+        {rootCause.suspect_change && (
+          <p className="mt-3 rounded-md bg-affected-wash px-3 py-2 text-sm">
+            ⚠ Suspect change: <span className="font-mono font-semibold">{rootCause.suspect_change.service}</span>
+            {" "}{rootCause.suspect_change.label},{" "}
+            {rootCause.suspect_change.minutes_before >= 1
+              ? `${rootCause.suspect_change.minutes_before} min`
+              : "<1 min"} before the first error.
+          </p>
+        )}
         <h3 className="mt-4 text-sm font-semibold">Why we think this</h3>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-muted">
           {rootCause.evidence.slice(0, 5).map((e, i) => (

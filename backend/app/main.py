@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from . import models
-from .api import events, incidents, simulator, ws
+from .api import benchmark, events, incidents, simulator, ws
 from .config import settings
 from .db import Base, SessionLocal, engine
 
@@ -67,4 +67,5 @@ def health():
 app.include_router(events.router, prefix="/api/v1")
 app.include_router(incidents.router, prefix="/api/v1")
 app.include_router(simulator.router, prefix="/api/v1")
+app.include_router(benchmark.router, prefix="/api/v1")
 app.include_router(ws.router)

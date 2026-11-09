@@ -140,6 +140,9 @@ the hackathon demo if you like it, but for a $0 long-term home, Render
    revenue impact (≈ ₹20,000 — an estimate, 40 failed payments × ₹500 assumed
    average order value), then the prioritized recommendations.
 7. **Report (20s):** generated incident report, download it.
+8. **Chaos (60s, the closer):** on Sources, "Break something" — let a judge pick
+   a service and a fault, and watch J.A.R.V.I.S. find it live. Then show the
+   Benchmark page: 225/225, 100%, 5.6s average detection.
 
 ## Golden test
 
@@ -212,6 +215,36 @@ root cause `postgres-primary`, confidence ≥ 0.70 (observed 0.78 live),
 - **Business impact:** the Impact card shows estimated revenue impact alongside
   users and failed payments. It is labelled an estimate everywhere: failed
   transactions × `avg_order_value_inr` (₹500, returned with the number).
+
+## Chaos, benchmark, what-if, suspect changes
+
+- **Fault injector / "Break something" (Sources page):** `POST /api/v1/simulator/inject`
+  with `{service, fault_type, seed, speed}` makes the chosen service emit errors,
+  then spreads symptoms to its dependents along the topology graph, one hop every
+  ~8–20s, plus healthy noise. Fault types: pool_exhaustion, cache_failure,
+  deploy_failure, oom, latency. Nothing is scripted per service — the engine has
+  to find the injected service. Live check: injecting `cache_failure` into
+  `redis-cache` produced 1 P1 incident, root cause redis-cache, confidence 0.84.
+- **Benchmark (Benchmark page):** `POST /api/v1/benchmark/run` runs the injector
+  across every service × every fault type, 5 seeds each (225 runs), and reports
+  top-1 root-cause accuracy and average time to detect (scenario time, from the
+  first anomalous event until the engine first names the injected service).
+  Measured 2026-11-09: **225/225 correct, 100.0% accuracy, 5.6s average time
+  to detect, 0 misses** — the full run table is on the page, misses included.
+  A robustness probe with the shared trace id stripped also scored 225/225.
+  Honest scope: this measures the engine on injected cascades built from the
+  topology graph, not on wild production logs.
+- **What-if replay:** `GET /api/v1/incidents/{id}/whatif?fix_at=30` re-counts the
+  incident's own events after the fix time — no new data. The incident page has
+  a slider ("fix applied at +N seconds"). S1 example: fixing at +30s would have
+  avoided about 60 of 62 users and all failed payments (≈ ₹20,000). Labelled
+  everywhere: "Simulation: assumes the fix works immediately."
+- **Suspect-change marker:** deploy and config-change events (POST /events, or
+  the "Record a change" card on Sources) are checked against each incident: a
+  change within 10 minutes before the first error, on the root-cause service or
+  a neighbour, adds a timeline marker and an evidence line, e.g. "Suspect:
+  auth-service deploy v2.4.1 started, 5s before the first error." The score
+  boost is a deliberately small +0.05, so the golden test stays at 0.78.
 
 ## Out of scope (roadmap)
 

@@ -10,6 +10,7 @@ export const metadata: Metadata = { title: "J.A.R.V.I.S. — Incident Intelligen
 const NAV = [
   { href: "/", label: "Overview" },
   { href: "/sources", label: "Sources" },
+  { href: "/benchmark", label: "Benchmark" },
   { href: "/topology", label: "Topology" },
 ];
 

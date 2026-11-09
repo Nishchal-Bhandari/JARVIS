@@ -11,6 +11,7 @@ import { RecommendationItem } from "@/components/jarvis/RecommendationItem";
 import { Timeline } from "@/components/jarvis/Timeline";
 import { EventTable } from "@/components/jarvis/EventTable";
 import { CopilotPanel } from "@/components/jarvis/CopilotPanel";
+import { WhatIfCard } from "@/components/jarvis/WhatIfCard";
 import { fmtDuration, fmtTime } from "@/lib/format";
 
 const CausalGraph = dynamic(() => import("@/components/jarvis/CausalGraph").then((m) => m.CausalGraph), { ssr: false });
@@ -52,6 +53,7 @@ export default function IncidentPage({ params }: { params: Promise<{ id: string 
         </div>
         <div className="space-y-6">
           {d.impact && <ImpactCard impact={d.impact} />}
+          <WhatIfCard incidentId={id} startedAt={d.started_at} lastEventAt={d.last_event_at} />
           <Card>
             <CardTitle>Recommended fixes</CardTitle>
             <ol className="mt-3 space-y-2">

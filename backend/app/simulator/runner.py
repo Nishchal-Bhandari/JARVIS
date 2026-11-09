@@ -16,12 +16,16 @@ class Simulator:
         self._task = None
 
     async def start(self, scenario, speed, ingest, broadcast=None, on_done=None):
+        events = generate_scenario_events(scenario, base=datetime.now(UTC))
+        return await self.start_events(events, scenario, speed, ingest, broadcast, on_done)
+
+    async def start_events(self, events, scenario, speed, ingest, broadcast=None, on_done=None):
+        """Play back a pre-built event list (scenario or fault injection)."""
         if self.running:
             return False
         self.running = True
         self.scenario = scenario
         self.speed = speed
-        events = generate_scenario_events(scenario, base=datetime.now(UTC))
         self.total = len(events)
         self.progress = 0
 

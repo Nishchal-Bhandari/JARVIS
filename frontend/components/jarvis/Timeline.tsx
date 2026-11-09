@@ -31,7 +31,8 @@ export function Timeline({ stages }: { stages: TimelineStage[] }) {
   }, [stages.length]);
 
   if (!stages.length) return <p className="text-sm text-muted">No timeline stages yet.</p>;
-  const maxOffset = Math.max(...stages.map((s) => s.offset_seconds), 1);
+  const maxOffset = Math.max(...stages.map((s) => Math.max(s.offset_seconds, 0)), 1);
+  const fmtOffset = (s: number) => `${s < 0 ? "−" : "+"}${Math.abs(s).toFixed(0)}s`;
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
@@ -43,10 +44,10 @@ export function Timeline({ stages }: { stages: TimelineStage[] }) {
       </div>
       <div className="space-y-2">
         {stages.map((stage, i) => (
-          <div key={i} className={`flex items-center gap-3 rounded border p-2 text-sm ${i <= index ? "border-trace bg-trace-wash" : "border-border"}`}>
-            <span className="tabular w-14 shrink-0 font-mono">+{stage.offset_seconds.toFixed(0)}s</span>
-            <span className="h-2 rounded-full bg-trace" style={{ width: `${Math.max(4, (stage.offset_seconds / maxOffset) * 100)}px` }} />
-            <span>{stage.services.join(", ")}</span>
+          <div key={i} className={`flex items-center gap-3 rounded border p-2 text-sm ${stage.marker ? "border-affected bg-affected-wash" : i <= index ? "border-trace bg-trace-wash" : "border-border"}`}>
+            <span className="tabular w-14 shrink-0 font-mono">{fmtOffset(stage.offset_seconds)}</span>
+            <span className={`h-2 rounded-full ${stage.marker ? "bg-affected" : "bg-trace"}`} style={{ width: `${Math.max(4, (Math.max(stage.offset_seconds, 0) / maxOffset) * 100)}px` }} />
+            <span>{stage.marker ? `⚠ Suspect change: ${stage.services.join(", ")}` : stage.services.join(", ")}</span>
             <span className="truncate text-muted">{stage.key_events[0] || ""}</span>
           </div>
         ))}

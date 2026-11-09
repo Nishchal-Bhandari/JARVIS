@@ -58,6 +58,7 @@ class RootCause(BaseModel):
     confidence: float
     evidence: list[str]
     alternatives: list[Alternative] = Field(default_factory=list)
+    suspect_change: dict | None = None
 
 
 class Impact(BaseModel):
@@ -76,6 +77,7 @@ class TimelineStage(BaseModel):
     offset_seconds: float
     services: list[str] = Field(default_factory=list)
     key_events: list[str] = Field(default_factory=list)
+    marker: bool = False
 
 
 class Recommendation(BaseModel):
@@ -120,6 +122,13 @@ class UploadResult(BaseModel):
 class SimulatorStart(BaseModel):
     scenario: str = "db_pool_exhaustion"
     speed: float = 1.0
+
+
+class InjectIn(BaseModel):
+    service: str
+    fault_type: str
+    seed: int = 42
+    speed: float = 10.0
 
 
 class AskIn(BaseModel):

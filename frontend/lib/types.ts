@@ -14,6 +14,7 @@ export interface Alternative {
 export interface RootCause {
   service: string; label: string; confidence: number;
   evidence: string[]; alternatives: Alternative[];
+  suspect_change?: { service: string; label: string; minutes_before: number } | null;
 }
 export interface Impact {
   affected_services: string[]; at_risk_services: string[];
@@ -22,6 +23,7 @@ export interface Impact {
 }
 export interface TimelineStage {
   t: string; offset_seconds: number; services: string[]; key_events: string[];
+  marker?: boolean;
 }
 export interface Recommendation {
   priority: number; title: string; detail: string; risk: string; source: string;

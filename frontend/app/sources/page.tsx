@@ -4,11 +4,26 @@ import { api, API } from "@/lib/api";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button, GhostButton } from "@/components/ui/button";
 
+const INJECT_SERVICES = ["postgres-primary", "redis-cache", "auth-service", "payment-service", "api-gateway", "order-service", "web-app", "notification-service", "cdn"];
+const FAULTS = [
+  { id: "pool_exhaustion", label: "Connection pool exhaustion" },
+  { id: "cache_failure", label: "Cache failure" },
+  { id: "deploy_failure", label: "Bad deploy" },
+  { id: "oom", label: "Memory pressure / OOM" },
+  { id: "latency", label: "Latency spike" },
+];
+
 export default function Sources() {
   const [result, setResult] = useState<{ accepted: number; rejected: number; errors: string[] } | null>(null);
   const [scenario, setScenario] = useState("db_pool_exhaustion");
   const [speed, setSpeed] = useState(5);
   const [simStatus, setSimStatus] = useState("");
+  const [injectService, setInjectService] = useState("redis-cache");
+  const [injectFault, setInjectFault] = useState("cache_failure");
+  const [changeService, setChangeService] = useState("auth-service");
+  const [changeType, setChangeType] = useState<"deploy" | "config">("deploy");
+  const [changeDetail, setChangeDetail] = useState("v2.4.1");
+  const [changeStatus, setChangeStatus] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function onFile(f: File) {
@@ -59,6 +74,45 @@ export default function Sources() {
               <GhostButton onClick={async () => { await api.simulatorReset(); setSimStatus("All data cleared"); }}>Reset</GhostButton>
             </div>
             {simStatus && <p className="text-sm text-muted">{simStatus}</p>}
+          </div>
+        </Card>
+        <Card>
+          <CardTitle>Break something</CardTitle>
+          <p className="mt-1 text-sm text-muted">Judge&apos;s choice: pick a service and a fault. J.A.R.V.I.S. has to find it live — nothing is scripted per service.</p>
+          <div className="mt-3 space-y-3">
+            <label className="block text-sm">Service
+              <select value={injectService} onChange={(e) => setInjectService(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1">
+                {INJECT_SERVICES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </label>
+            <label className="block text-sm">Fault
+              <select value={injectFault} onChange={(e) => setInjectFault(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1">
+                {FAULTS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
+              </select>
+            </label>
+            <Button onClick={async () => { const r = await api.inject(injectService, injectFault); setSimStatus(r.started ? `Injected ${injectFault} into ${injectService} — watch Overview for the incident` : "Simulator already running"); }}>Break it</Button>
+          </div>
+        </Card>
+        <Card>
+          <CardTitle>Record a change</CardTitle>
+          <p className="mt-1 text-sm text-muted">Log a deploy or config change. If errors follow within 10 minutes on that service or a neighbour, J.A.R.V.I.S. flags it as a suspect change.</p>
+          <div className="mt-3 space-y-3">
+            <label className="block text-sm">Service
+              <select value={changeService} onChange={(e) => setChangeService(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1">
+                {INJECT_SERVICES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </label>
+            <label className="block text-sm">Type
+              <select value={changeType} onChange={(e) => setChangeType(e.target.value as "deploy" | "config")} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1">
+                <option value="deploy">Deploy</option>
+                <option value="config">Config change</option>
+              </select>
+            </label>
+            <label className="block text-sm">Detail
+              <input value={changeDetail} onChange={(e) => setChangeDetail(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1" placeholder="v2.4.1" />
+            </label>
+            <Button onClick={async () => { await api.recordChange(changeService, changeType, changeDetail); setChangeStatus(`Recorded ${changeType} on ${changeService}`); }}>Record change</Button>
+            {changeStatus && <p className="text-sm text-muted">{changeStatus}</p>}
           </div>
         </Card>
       </div>

@@ -29,8 +29,12 @@ def dependency_closure(dependencies):
     return dependents
 
 
-def score_root_cause(events, dependencies, rules):
-    """Return {service, label, confidence, evidence, alternatives}."""
+def score_root_cause(events, dependencies, rules, change_services=None):
+    """Return {service, label, confidence, evidence, alternatives}.
+    change_services: services with a deploy/config change shortly before the
+    incident — each gets a small +0.05 raw-score boost (deliberately small:
+    a change is a suspect, not proof). With no change events the scores are
+    unchanged, so the golden test stays at 0.78."""
     services = sorted({e["service"] for e in events})
     if not services:
         return None
@@ -57,6 +61,8 @@ def score_root_cause(events, dependencies, rules):
         for sig_id in sig_by_service.get(s, []):
             sig = max(sig, float(rule_by_id.get(sig_id, {}).get("prior", 0.5)))
         raw[s] = 0.35 * earliness + 0.35 * upstream + 0.20 * sig + 0.10 * peak_sev.get(s, 0)
+        if change_services and s in change_services:
+            raw[s] += 0.05
         factors[s] = (earliness, upstream, sig, peak_sev.get(s, 0))
     # softmax confidence, temperature 0.15
     exps = {s: math.exp(v / 0.15) for s, v in raw.items()}

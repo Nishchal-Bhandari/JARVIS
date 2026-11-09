@@ -40,11 +40,77 @@ def event_to_dict(ev: models.Event) -> dict:
     }
 
 
-def analyse_cluster(cluster, topology, rules):
-    rc = rootcause.score_root_cause(cluster, topology["dependencies"], rules)
+def is_change_event(ev: dict) -> bool:
+    """A deploy or config-change event. These are usually info severity and
+    never anomalous on their own — they only matter as suspects."""
+    if ev.get("type") in ("deploy", "config"):
+        return True
+    if ev.get("signature") == "deploy":
+        return True
+    return "config change" in (ev.get("message") or "").lower()
+
+
+def find_suspect_change(cluster, change_events, dependencies):
+    """The most recent deploy/config change within 10 minutes before the
+    first anomaly, on the root-cause service or a neighbouring service.
+    Returns the change dict or None."""
+    if not change_events or not cluster:
+        return None
+    from .correlation import build_graph, hops
+
+    graph = build_graph(dependencies)
+    services = {e["service"] for e in cluster}
+    # First real error, not the first cluster event (the deploy itself may
+    # be in the cluster, and it is not an error).
+    error_times = [e["timestamp"] for e in cluster if e.get("severity") in ("error", "critical")]
+    t0 = min(error_times) if error_times else min(e["timestamp"] for e in cluster)
+    candidates = []
+    for c in change_events:
+        delta = (t0 - c["timestamp"]).total_seconds()
+        if not 0 <= delta <= 600:
+            continue
+        if c["service"] in services:
+            candidates.append((c, delta))
+            continue
+        if any(hops(graph, c["service"], s) == 1 for s in services):
+            candidates.append((c, delta))
+    if not candidates:
+        return None
+    change, delta = max(candidates, key=lambda x: x[0]["timestamp"])
+    label = (change.get("message") or "change").strip()
+    return {
+        "service": change["service"],
+        "label": label,
+        "minutes_before": round(delta / 60, 1),
+        "seconds_before": round(delta),
+        "timestamp": change["timestamp"],
+    }
+
+
+def analyse_cluster(cluster, topology, rules, change_events=None):
+    suspect = find_suspect_change(cluster, change_events or [], topology["dependencies"])
+    change_services = {suspect["service"]} if suspect else None
+    rc = rootcause.score_root_cause(
+        cluster, topology["dependencies"], rules, change_services=change_services
+    )
+    if suspect:
+        mins = suspect["minutes_before"]
+        when = f"{mins:g} min" if mins >= 1 else f"{suspect['seconds_before']}s"
+        rc["evidence"] = [
+            f"Suspect: {suspect['service']} {suspect['label']}, {when} before the first error."
+        ] + rc["evidence"]
+        rc["suspect_change"] = {
+            "service": suspect["service"],
+            "label": suspect["label"],
+            "minutes_before": suspect["minutes_before"],
+        }
     imp = impact_mod.compute_impact(cluster, topology["dependencies"], topology)
     sev = severity.compute_severity(imp)
-    tl = timeline.build_timeline(cluster, topology["dependencies"])
+    tl = timeline.build_timeline(
+        cluster,
+        topology["dependencies"],
+        change_events=[suspect] if suspect else None,
+    )
     recs = recommend.recommendations_for(rc, rules)
     services = sorted({e["service"] for e in cluster})
     title = f"{rc['label']} — {rc['service']}" if rc else "Incident"
@@ -78,6 +144,7 @@ def tick(db: Session, broadcast=None):
     )
     # tag anomalies in-memory (signature + severity); persist is_anomaly flag
     events = []
+    change_events = []
     for row in rows:
         d = event_to_dict(row)
         sig, _ = anomaly.tag_signature(d.get("message", ""), rules)
@@ -88,6 +155,8 @@ def tick(db: Session, broadcast=None):
         row.is_anomaly = 1 if d["is_anomaly"] else 0
         if d["is_anomaly"]:
             events.append(d)
+        if is_change_event(d):
+            change_events.append(d)
     db.commit()
     clusters = correlation.cluster_events(
         events, topology["dependencies"], threshold=settings.correlation_threshold
@@ -108,7 +177,7 @@ def tick(db: Session, broadcast=None):
             ):
                 target = inc
                 break
-        analysis = analyse_cluster(cluster, topology, rules)
+        analysis = analyse_cluster(cluster, topology, rules, change_events=change_events)
         started = min(e["timestamp"] for e in cluster)
         last = max(e["timestamp"] for e in cluster)
         if target is None:

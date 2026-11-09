@@ -3,7 +3,7 @@
 from collections import defaultdict
 
 
-def build_timeline(events, dependencies):
+def build_timeline(events, dependencies, change_events=None):
     first = {}
     for e in sorted(events, key=lambda x: x["timestamp"]):
         s = e["service"]
@@ -27,4 +27,16 @@ def build_timeline(events, dependencies):
                 "key_events": key,
             }
         )
+    # Suspect-change markers sit before the first anomaly (negative offset).
+    for c in sorted(change_events or [], key=lambda x: x["timestamp"]):
+        stages.append(
+            {
+                "t": c["timestamp"],
+                "offset_seconds": float((c["timestamp"] - t0).total_seconds()),
+                "services": [c["service"]],
+                "key_events": [c.get("label", c.get("message", "change"))],
+                "marker": True,
+            }
+        )
+    stages.sort(key=lambda s: s["offset_seconds"])
     return stages

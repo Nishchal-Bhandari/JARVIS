@@ -12,6 +12,29 @@ from collections import defaultdict
 AVG_ORDER_VALUE_INR = 500
 
 
+def count_users(events):
+    """Distinct users on error/critical events (fall back to any user id)."""
+    users = {
+        e["user_id"]
+        for e in events
+        if e.get("user_id") and e.get("severity") in ("error", "critical")
+    }
+    if not users:
+        users = {e["user_id"] for e in events if e.get("user_id")}
+    return len(users)
+
+
+def count_failed_transactions(events):
+    """Failed payments: payment_failed signature, or a 5xx on payment-service."""
+    return sum(
+        1
+        for e in events
+        if e.get("signature") == "payment_failed"
+        or (e.get("attrs") or {}).get("status") in (500, 502, 503, 504)
+        and "payment" in (e.get("service") or "")
+    )
+
+
 def compute_impact(events, dependencies, topology):
     affected = sorted({e["service"] for e in events})
     # at-risk: transitive dependents of root cause with no anomalies yet
@@ -30,25 +53,13 @@ def compute_impact(events, dependencies, topology):
             seen.add(n)
             at_risk.add(n)
             stack.extend(rev.get(n, []))
-    users = {
-        e["user_id"]
-        for e in events
-        if e.get("user_id") and e.get("severity") in ("error", "critical")
-    }
-    if not users:
-        users = {e["user_id"] for e in events if e.get("user_id")}
-    failed = sum(
-        1
-        for e in events
-        if e.get("signature") == "payment_failed"
-        or (e.get("attrs") or {}).get("status") in (500, 502, 503, 504)
-        and "payment" in (e.get("service") or "")
-    )
+    users = count_users(events)
+    failed = count_failed_transactions(events)
     critical_ids = {s["id"] for s in topology.get("services", []) if s.get("critical")}
     return {
         "affected_services": affected,
         "at_risk_services": sorted(at_risk),
-        "users_affected": len(users),
+        "users_affected": users,
         "failed_transactions": failed,
         "critical_path_hit": bool(set(affected) & critical_ids),
         "estimated_revenue_impact_inr": failed * AVG_ORDER_VALUE_INR,

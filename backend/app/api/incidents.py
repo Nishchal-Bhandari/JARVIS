@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..core import copilot
 from ..core import report as report_mod
+from ..core import whatif as whatif_mod
+from ..core.engine import event_to_dict
 from ..db import get_db
 
 router = APIRouter()
@@ -113,6 +115,36 @@ def update_incident(incident_id: str, payload: dict, db: Session = Depends(get_d
         inc.status = payload["status"]
     db.commit()
     return {"id": inc.id, "status": inc.status}
+
+
+@router.get("/incidents/{incident_id}/whatif")
+def whatif(incident_id: str, fix_at: float = 30.0, db: Session = Depends(get_db)):
+    """What-if replay: if the fix had been applied fix_at seconds after the
+    incident started, how many users / failed payments / rupees would have
+    been avoided? Simulation: assumes the fix works immediately."""
+    inc = db.query(models.Incident).get(incident_id)
+    if not inc:
+        raise HTTPException(404, "incident not found")
+    links = (
+        db.query(models.IncidentEvent).filter(models.IncidentEvent.incident_id == incident_id).all()
+    )
+    ids = [l.event_id for l in links]
+    rows = (
+        db.query(models.Event)
+        .filter(models.Event.id.in_(ids))
+        .order_by(models.Event.timestamp)
+        .all()
+        if ids
+        else []
+    )
+    events = [event_to_dict(r) for r in rows]
+    started = inc.started_at
+    last = inc.last_event_at
+    duration = (last - started).total_seconds() if started and last else 0.0
+    fix_at = max(0.0, min(float(fix_at), duration))
+    result = whatif_mod.compute_whatif(events, started, fix_at)
+    result["duration_seconds"] = round(duration, 1)
+    return result
 
 
 @router.get("/incidents/{incident_id}/report")
