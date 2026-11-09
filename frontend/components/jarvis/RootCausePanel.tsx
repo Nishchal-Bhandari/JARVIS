@@ -21,14 +21,28 @@ export function RootCausePanel({ rootCause }: { rootCause: RootCause }) {
           ))}
         </ul>
         {rootCause.alternatives.length > 0 && (
-          <details className="mt-3 text-sm">
-            <summary className="cursor-pointer text-trace">Other candidates</summary>
-            <ul className="mt-1 list-disc pl-5 text-muted">
+          <div className="mt-4 border-t border-border pt-3">
+            <h3 className="text-sm font-semibold">Why not the others?</h3>
+            <ul className="mt-2 space-y-3">
               {rootCause.alternatives.map((a) => (
-                <li key={a.service}>{a.service} — {Math.round(a.confidence * 100)}%</li>
+                <li key={a.service} className="text-sm">
+                  <span className="font-mono font-semibold">{a.service}</span>
+                  {" — "}
+                  <span className="text-muted">{Math.round(a.confidence * 100)}% confidence</span>
+                  {a.score !== undefined && (
+                    <span className="text-muted"> · score {a.score.toFixed(2)}</span>
+                  )}
+                  {(a.why_not?.length ?? 0) > 0 && (
+                    <ul className="mt-0.5 list-disc space-y-0.5 pl-5 text-muted">
+                      {a.why_not!.map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
               ))}
             </ul>
-          </details>
+          </div>
         )}
       </div>
     </div>

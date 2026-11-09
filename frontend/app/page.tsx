@@ -18,6 +18,20 @@ export default function Overview() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold">Overview</h1>
+      {(stats.data?.total_events ?? 0) > 0 && (stats.data?.total_incidents ?? 0) > 0 && (
+        <Card>
+          <p className="text-lg">
+            <span className="tabular font-bold">{stats.data!.total_events} alerts</span>
+            {" → "}
+            <span className="tabular font-bold">{stats.data!.total_incidents} incidents</span>
+            {" — "}
+            <span className="font-bold text-accent">{stats.data!.noise_reduction_pct}% noise reduced</span>
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Most alerts were symptoms of the same underlying problem, not new problems.
+          </p>
+        </Card>
+      )}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card><div className="tabular text-3xl font-bold">{stats.data?.open_incidents ?? "—"}</div><div className="text-sm text-muted">open incidents</div></Card>
         <Card><div className="tabular text-3xl font-bold">{stats.data?.affected_services ?? "—"}</div><div className="text-sm text-muted">services affected</div></Card>

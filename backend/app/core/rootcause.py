@@ -89,11 +89,45 @@ def score_root_cause(events, dependencies, rules):
         if sig_id in rule_by_id:
             label = rule_by_id[sig_id]["label"]
             break
-    alternatives = [
-        {"service": s, "confidence": round(conf[s], 3)}
-        for s in sorted(services, key=lambda s: -conf[s])
-        if s != top
-    ][:3]
+    # Runner-up candidates, with the plain-English reasons they lost.
+    # Each reason compares the candidate's factor against the winner's,
+    # so "why not X?" is answered from the same scoring, not invented.
+    top_dep_n = len([o for o in services if o != top and o in dependents.get(top, set())])
+    alternatives = []
+    for s in sorted(services, key=lambda s: -conf[s]):
+        if s == top:
+            continue
+        f = factors[s]
+        why_not = []
+        delay = (first_seen[s] - t0).total_seconds()
+        if delay > 0:
+            why_not.append(f"First anomaly {delay:.0f}s after {top}")
+        dep_n = len([o for o in services if o != s and o in dependents.get(s, set())])
+        if dep_n < top_dep_n:
+            why_not.append(
+                f"Only {dep_n} of {len(services) - 1} affected services depend on it "
+                f"(vs {top_dep_n} for {top})"
+            )
+        if f[2] == 0:
+            why_not.append("No matching failure signature")
+        if f[3] < 0.66:
+            sev = "warning" if f[3] >= 0.33 else "info"
+            why_not.append(f"Peak severity was only {sev}, not error")
+        alternatives.append(
+            {
+                "service": s,
+                "confidence": round(conf[s], 3),
+                "score": round(raw[s], 3),
+                "factors": {
+                    "earliness": round(f[0], 2),
+                    "upstream": round(f[1], 2),
+                    "signature": round(f[2], 2),
+                    "severity": round(f[3], 2),
+                },
+                "why_not": why_not[:2],
+            }
+        )
+    alternatives = alternatives[:3]
     return {
         "service": top,
         "label": label,

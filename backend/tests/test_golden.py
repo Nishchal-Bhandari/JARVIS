@@ -65,10 +65,18 @@ def test_golden_db_pool_exhaustion():
     assert rc["service"] == "postgres-primary", rc
     assert rc["confidence"] >= 0.70, rc
     assert len(rc["evidence"]) >= 3, rc
+    # Standout: every runner-up explains why it lost, from the same scoring.
+    assert rc["alternatives"], rc
+    for alt in rc["alternatives"]:
+        assert alt["why_not"], alt
+        assert alt["score"] < 1.0 and "earliness" in alt["factors"], alt
     imp = impact_mod.compute_impact(main, TOPO["dependencies"], TOPO)
     assert len(imp["affected_services"]) >= 5, imp
     assert imp["users_affected"] >= 30, imp
     assert imp["failed_transactions"] >= 30, imp
+    # Standout: revenue impact is an explicit estimate, never a bare number.
+    assert imp["estimated_revenue_impact_inr"] == imp["failed_transactions"] * 500, imp
+    assert imp["avg_order_value_inr"] == 500, imp
     assert severity.compute_severity(imp) == "P1", imp
     cdn_imp = impact_mod.compute_impact(cdn, TOPO["dependencies"], TOPO)
     assert severity.compute_severity(cdn_imp) == "P4", cdn_imp

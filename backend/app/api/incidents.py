@@ -192,13 +192,19 @@ def put_topology(payload: dict, db: Session = Depends(get_db)):
 @router.get("/stats/overview")
 def stats(db: Session = Depends(get_db)):
     open_n = db.query(models.Incident).filter(models.Incident.status != "resolved").count()
+    total_incidents = db.query(models.Incident).count()
     total_events = db.query(models.Event).count()
     affected = set()
     for inc in db.query(models.Incident).filter(models.Incident.status != "resolved").all():
         affected.update((inc.impact or {}).get("affected_services", []))
+    # Noise reduction: how much of the alert stream collapsed into incidents.
+    # 87 alerts -> 2 incidents = 97.7% of alerts were symptoms, not new problems.
+    noise_pct = round((1 - total_incidents / total_events) * 100, 1) if total_events else 0.0
     return {
         "open_incidents": open_n,
+        "total_incidents": total_incidents,
         "total_events": total_events,
         "affected_services": len(affected),
         "events_per_minute": total_events,
+        "noise_reduction_pct": noise_pct,
     }

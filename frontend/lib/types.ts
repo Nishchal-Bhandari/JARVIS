@@ -6,7 +6,11 @@ export interface JarEvent {
   metric?: Metric | null; user_id?: string | null; trace_id?: string | null;
   signature?: string | null; is_anomaly: boolean; attrs?: Record<string, unknown>;
 }
-export interface Alternative { service: string; confidence: number }
+export interface Alternative {
+  service: string; confidence: number; score?: number;
+  factors?: { earliness: number; upstream: number; signature: number; severity: number };
+  why_not?: string[];
+}
 export interface RootCause {
   service: string; label: string; confidence: number;
   evidence: string[]; alternatives: Alternative[];
@@ -14,6 +18,7 @@ export interface RootCause {
 export interface Impact {
   affected_services: string[]; at_risk_services: string[];
   users_affected: number; failed_transactions: number; critical_path_hit: boolean;
+  estimated_revenue_impact_inr?: number; avg_order_value_inr?: number;
 }
 export interface TimelineStage {
   t: string; offset_seconds: number; services: string[]; key_events: string[];
@@ -41,4 +46,5 @@ export interface Topology {
 export interface Stats {
   open_incidents: number; total_events: number;
   affected_services: number; events_per_minute: number;
+  total_incidents?: number; noise_reduction_pct?: number;
 }

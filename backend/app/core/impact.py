@@ -1,6 +1,15 @@
-"""Impact analysis (specsheet §8). Pure functions."""
+"""Impact analysis (specsheet §8). Pure functions.
+
+Revenue impact is an *estimate*, not a measured figure: failed transactions
+times an assumed average order value. The assumption is returned with the
+number (avg_order_value_inr) and shown in the UI, so it is never presented
+as exact revenue lost.
+"""
 
 from collections import defaultdict
+
+# Assumed average order value for the payment platform, in INR.
+AVG_ORDER_VALUE_INR = 500
 
 
 def compute_impact(events, dependencies, topology):
@@ -42,4 +51,6 @@ def compute_impact(events, dependencies, topology):
         "users_affected": len(users),
         "failed_transactions": failed,
         "critical_path_hit": bool(set(affected) & critical_ids),
+        "estimated_revenue_impact_inr": failed * AVG_ORDER_VALUE_INR,
+        "avg_order_value_inr": AVG_ORDER_VALUE_INR,
     }

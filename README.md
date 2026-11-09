@@ -129,13 +129,16 @@ the hackathon demo if you like it, but for a $0 long-term home, Render
 1. **Problem (20s):** a wall of raw alerts — login failures, slow APIs, failed payments.
 2. **Ingest (30s):** upload `sample_data/payment_outage.log`, `curl` one event to
    `POST /api/v1/events`, click "Start simulator".
-3. **Correlation (40s):** Overview shows one P1 incident replacing dozens of
-   alerts; the unrelated CDN alert stays a separate P4 incident.
+3. **Correlation (40s):** Overview shows the headline — "87 alerts → 2 incidents,
+   97.7% noise reduced"; the unrelated CDN alert stays a separate P4 incident.
 4. **Root cause (50s):** open the incident — the graph lights up red at
-   `postgres-primary`; read the confidence and evidence lines.
+   `postgres-primary`; read the confidence and evidence lines, then "Why not
+   the others?": payment-service lost because its first anomaly was 11s later
+   and only 2 of 5 affected services depend on it.
 5. **Timeline (20s):** replay the spread DB → payment → auth → gateway.
-6. **Impact and fix (20s):** affected users and failed payments, then the
-   prioritized recommendations.
+6. **Impact and fix (20s):** affected users, failed payments, and the estimated
+   revenue impact (≈ ₹20,000 — an estimate, 40 failed payments × ₹500 assumed
+   average order value), then the prioritized recommendations.
 7. **Report (20s):** generated incident report, download it.
 
 ## Golden test
@@ -196,6 +199,19 @@ root cause `postgres-primary`, confidence ≥ 0.70 (observed 0.78 live),
 - **Docker was not verified in this environment** (no Docker daemon here);
   `docker compose up --build` is the intended one-command start — verify it
   on the demo machine before the pitch.
+
+## Standout features (added for the pitch)
+
+- **Noise-reduction headline:** the Overview banner turns the alert stream into
+  one line — "87 alerts → 2 incidents, 97.7% noise reduced" (`GET /stats/overview`
+  returns `total_events`, `total_incidents`, `noise_reduction_pct`).
+- **"Why not the others?":** every runner-up root cause ships with its score,
+  its four factor values, and 1–2 plain-English reasons it lost, computed from
+  the same scoring (first-seen delay, dependent count, missing signature, peak
+  severity) — never invented. See `root_cause.alternatives[].why_not`.
+- **Business impact:** the Impact card shows estimated revenue impact alongside
+  users and failed payments. It is labelled an estimate everywhere: failed
+  transactions × `avg_order_value_inr` (₹500, returned with the number).
 
 ## Out of scope (roadmap)
 

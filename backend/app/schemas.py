@@ -47,6 +47,9 @@ class EventOut(BaseModel):
 class Alternative(BaseModel):
     service: str
     confidence: float
+    score: float = 0.0
+    factors: dict = Field(default_factory=dict)
+    why_not: list[str] = Field(default_factory=list)
 
 
 class RootCause(BaseModel):
@@ -63,6 +66,9 @@ class Impact(BaseModel):
     users_affected: int = 0
     failed_transactions: int = 0
     critical_path_hit: bool = False
+    # Estimate only: failed_transactions x avg_order_value_inr (assumption, shown in UI).
+    estimated_revenue_impact_inr: int = 0
+    avg_order_value_inr: int = 500
 
 
 class TimelineStage(BaseModel):
