@@ -49,6 +49,42 @@ Then open http://localhost:3000, go to Sources, and start the simulator
 (`db_pool_exhaustion`, 5× or 10×). A P1 incident appears with root cause
 `postgres-primary`.
 
+## Host it for free (Vercel + Render)
+
+The cheapest reliable free split: **frontend on Vercel (Hobby, free)** and
+**backend on Render (free tier)**. Do not put both on Render — two free
+services would use ~1,440 instance-hours/month against Render's 750-hour
+free allowance, and both would be suspended.
+
+1. **Backend on Render** — sign in at render.com with GitHub, New → Web
+   Service, pick this repo. Render reads `render.yaml` from the repo root:
+   Python 3.11, build `pip install -e backend`, start
+   `uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend`,
+   health check `/health`. Note your API URL, e.g.
+   `https://jarvis-api.onrender.com`.
+   - Free tier limits: the service spins down after 15 minutes without
+     traffic and takes about a minute to wake up on the next request, and
+     the SQLite file is ephemeral — data is lost on restart. For this demo
+     that is fine: re-run the simulator and the incident is rebuilt.
+   - Open the API URL once after deploy to wake it up before the demo.
+2. **Frontend on Vercel** — sign in at vercel.com with GitHub, Add New →
+   Project, import this repo, set **Root Directory to `frontend`**. Add
+   environment variables:
+   - `NEXT_PUBLIC_API_URL` = your Render API URL (step 1)
+   - `NEXT_PUBLIC_WS_URL` = `wss://<your-render-host>/ws/stream`
+   Deploy. Vercel Hobby is free for personal, non-commercial projects
+   (100 GB transfer, 1M function invocations/month).
+3. **Point the API at the frontend** — in Render, set the API service's
+   `CORS_ORIGINS` to your Vercel URL (e.g. `https://jarvis-xyz.vercel.app`)
+   and redeploy the API. Without this, the browser blocks API calls.
+4. Open your Vercel URL, go to Sources, start the simulator — the demo
+   works exactly as it does locally.
+
+Alternative if you want one host: Fly.io (free credit for new accounts) can
+run the `docker-compose.yml` stack on one small VM, but its free allowance
+is a trial credit, not a permanent free tier — Vercel + Render above is
+the permanent-free option.
+
 ## Demo script (3 minutes)
 
 1. **Problem (20s):** a wall of raw alerts — login failures, slow APIs, failed payments.

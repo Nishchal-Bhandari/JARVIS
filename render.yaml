@@ -1,0 +1,27 @@
+# Render Blueprint — free hosting for the J.A.R.V.I.S. backend only.
+# The frontend goes on Vercel (Hobby, free). One Render service uses ~720 of
+# the 750 free instance-hours/month, so do NOT also put the frontend on Render.
+services:
+  - type: web
+    name: jarvis-api
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -e backend
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        value: sqlite:///./jarvis.db
+      - key: SEED
+        value: "42"
+      - key: CORS_ORIGINS
+        # Replace with your Vercel URL after you deploy the frontend, e.g.
+        # https://jarvis-xyz.vercel.app — then redeploy the API.
+        value: http://localhost:3000
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        sync: false
