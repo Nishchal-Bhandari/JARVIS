@@ -1,0 +1,12 @@
+.env
+jarvis.db
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+frontend/.next/
+frontend/.env.local
+*.log
+.ruff_cache/
+*.egg-info/
+!sample_data/*.log

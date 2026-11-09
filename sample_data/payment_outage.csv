@@ -1,0 +1,88 @@
+timestamp,service,severity,message,user_id,trace_id
+2026-11-09T10:15:00Z,postgres-primary,warning,connections 90/100,,
+2026-11-09T10:15:00Z,web-app,info,request served OK,,
+2026-11-09T10:15:02Z,postgres-primary,error,too many connections,,
+2026-11-09T10:15:04Z,postgres-primary,error,timeout acquiring connection from pool,,
+2026-11-09T10:15:07Z,web-app,info,request served OK,,
+2026-11-09T10:15:11Z,payment-service,error,timeout acquiring connection from pool,u_4821,tr_9ac1
+2026-11-09T10:15:13Z,payment-service,error,timeout acquiring connection from pool,u_4822,tr_9ac2
+2026-11-09T10:15:14Z,web-app,info,request served OK,,
+2026-11-09T10:15:19Z,auth-service,warning,slow queries on postgres-primary,,tr_77b1
+2026-11-09T10:15:21Z,auth-service,error,slow queries: p95 latency 1800ms,,
+2026-11-09T10:15:21Z,web-app,info,request served OK,,
+2026-11-09T10:15:28Z,web-app,info,request served OK,,
+2026-11-09T10:15:34Z,auth-service,error,login failed: upstream timeout,,tr_77b2
+2026-11-09T10:15:34Z,auth-service,error,login failed: upstream timeout,u_1000,tr_login_0
+2026-11-09T10:15:35Z,auth-service,error,login failed: upstream timeout,u_1001,tr_login_1
+2026-11-09T10:15:35Z,web-app,info,request served OK,,
+2026-11-09T10:15:36Z,auth-service,error,login failed: upstream timeout,u_1002,tr_login_2
+2026-11-09T10:15:37Z,auth-service,error,login failed: upstream timeout,u_1003,tr_login_3
+2026-11-09T10:15:38Z,auth-service,error,login failed: upstream timeout,u_1004,tr_login_4
+2026-11-09T10:15:39Z,auth-service,error,login failed: upstream timeout,u_1005,tr_login_5
+2026-11-09T10:15:40Z,auth-service,error,login failed: upstream timeout,u_1006,tr_login_6
+2026-11-09T10:15:41Z,auth-service,error,login failed: upstream timeout,u_1007,tr_login_7
+2026-11-09T10:15:42Z,auth-service,error,login failed: upstream timeout,u_1008,tr_login_8
+2026-11-09T10:15:42Z,web-app,info,request served OK,,
+2026-11-09T10:15:43Z,auth-service,error,login failed: upstream timeout,u_1009,tr_login_9
+2026-11-09T10:15:44Z,auth-service,error,login failed: upstream timeout,u_1010,tr_login_10
+2026-11-09T10:15:45Z,auth-service,error,login failed: upstream timeout,u_1011,tr_login_11
+2026-11-09T10:15:46Z,auth-service,error,login failed: upstream timeout,u_1012,tr_login_12
+2026-11-09T10:15:47Z,api-gateway,error,504 gateway timeout,,
+2026-11-09T10:15:47Z,auth-service,error,login failed: upstream timeout,u_1013,tr_login_13
+2026-11-09T10:15:48Z,auth-service,error,login failed: upstream timeout,u_1014,tr_login_14
+2026-11-09T10:15:49Z,api-gateway,error,502 bad gateway from payment-service,,
+2026-11-09T10:15:49Z,auth-service,error,login failed: upstream timeout,u_1015,tr_login_15
+2026-11-09T10:15:49Z,web-app,info,request served OK,,
+2026-11-09T10:15:50Z,auth-service,error,login failed: upstream timeout,u_1016,tr_login_16
+2026-11-09T10:15:51Z,auth-service,error,login failed: upstream timeout,u_1017,tr_login_17
+2026-11-09T10:15:52Z,auth-service,error,login failed: upstream timeout,u_1018,tr_login_18
+2026-11-09T10:15:53Z,auth-service,error,login failed: upstream timeout,u_1019,tr_login_19
+2026-11-09T10:15:55Z,order-service,error,timeout acquiring connection from pool,,
+2026-11-09T10:15:55Z,payment-service,error,payment failed: could not persist transaction,u_2000,tr_pay_0
+2026-11-09T10:15:56Z,payment-service,error,payment failed: could not persist transaction,u_2001,tr_pay_1
+2026-11-09T10:15:56Z,web-app,info,request served OK,,
+2026-11-09T10:15:57Z,payment-service,error,payment failed: could not persist transaction,u_2002,tr_pay_2
+2026-11-09T10:15:58Z,payment-service,error,payment failed: could not persist transaction,u_2003,tr_pay_3
+2026-11-09T10:15:59Z,payment-service,error,payment failed: could not persist transaction,u_2004,tr_pay_4
+2026-11-09T10:16:00Z,payment-service,error,payment failed: could not persist transaction,u_2005,tr_pay_5
+2026-11-09T10:16:01Z,payment-service,error,payment failed: could not persist transaction,u_2006,tr_pay_6
+2026-11-09T10:16:02Z,payment-service,error,payment failed: could not persist transaction,u_2007,tr_pay_7
+2026-11-09T10:16:03Z,payment-service,error,payment failed: could not persist transaction,u_2008,tr_pay_8
+2026-11-09T10:16:03Z,web-app,info,request served OK,,
+2026-11-09T10:16:04Z,payment-service,error,payment failed: could not persist transaction,u_2009,tr_pay_9
+2026-11-09T10:16:05Z,payment-service,error,payment failed: could not persist transaction,u_2010,tr_pay_10
+2026-11-09T10:16:06Z,payment-service,error,payment failed: could not persist transaction,u_2011,tr_pay_11
+2026-11-09T10:16:07Z,payment-service,error,payment failed: could not persist transaction,u_2012,tr_pay_12
+2026-11-09T10:16:08Z,web-app,error,checkout errors reported by users,,
+2026-11-09T10:16:08Z,payment-service,error,payment failed: could not persist transaction,u_2013,tr_pay_13
+2026-11-09T10:16:09Z,payment-service,error,payment failed: could not persist transaction,u_2014,tr_pay_14
+2026-11-09T10:16:10Z,payment-service,error,payment failed: could not persist transaction,u_2015,tr_pay_15
+2026-11-09T10:16:10Z,web-app,info,request served OK,,
+2026-11-09T10:16:11Z,payment-service,error,payment failed: could not persist transaction,u_2016,tr_pay_16
+2026-11-09T10:16:12Z,payment-service,error,payment failed: could not persist transaction,u_2017,tr_pay_17
+2026-11-09T10:16:13Z,payment-service,error,payment failed: could not persist transaction,u_2018,tr_pay_18
+2026-11-09T10:16:14Z,payment-service,error,payment failed: could not persist transaction,u_2019,tr_pay_19
+2026-11-09T10:16:15Z,payment-service,error,payment failed: could not persist transaction,u_2020,tr_pay_20
+2026-11-09T10:16:16Z,payment-service,error,payment failed: could not persist transaction,u_2021,tr_pay_21
+2026-11-09T10:16:17Z,payment-service,error,payment failed: could not persist transaction,u_2022,tr_pay_22
+2026-11-09T10:16:17Z,web-app,info,request served OK,,
+2026-11-09T10:16:18Z,payment-service,error,payment failed: could not persist transaction,u_2023,tr_pay_23
+2026-11-09T10:16:19Z,payment-service,error,payment failed: could not persist transaction,u_2024,tr_pay_24
+2026-11-09T10:16:20Z,payment-service,error,payment failed: could not persist transaction,u_2025,tr_pay_25
+2026-11-09T10:16:21Z,payment-service,error,payment failed: could not persist transaction,u_2026,tr_pay_26
+2026-11-09T10:16:22Z,payment-service,error,payment failed: could not persist transaction,u_2027,tr_pay_27
+2026-11-09T10:16:23Z,payment-service,error,payment failed: could not persist transaction,u_2028,tr_pay_28
+2026-11-09T10:16:24Z,payment-service,error,payment failed: could not persist transaction,u_2029,tr_pay_29
+2026-11-09T10:16:25Z,payment-service,error,payment failed: could not persist transaction,u_2030,tr_pay_30
+2026-11-09T10:16:26Z,payment-service,error,payment failed: could not persist transaction,u_2031,tr_pay_31
+2026-11-09T10:16:27Z,payment-service,error,payment failed: could not persist transaction,u_2032,tr_pay_32
+2026-11-09T10:16:28Z,payment-service,error,payment failed: could not persist transaction,u_2033,tr_pay_33
+2026-11-09T10:16:29Z,payment-service,error,payment failed: could not persist transaction,u_2034,tr_pay_34
+2026-11-09T10:16:30Z,payment-service,error,payment failed: could not persist transaction,u_2035,tr_pay_35
+2026-11-09T10:16:31Z,payment-service,error,payment failed: could not persist transaction,u_2036,tr_pay_36
+2026-11-09T10:16:32Z,payment-service,error,payment failed: could not persist transaction,u_2037,tr_pay_37
+2026-11-09T10:16:33Z,payment-service,error,payment failed: could not persist transaction,u_2038,tr_pay_38
+2026-11-09T10:16:34Z,payment-service,error,payment failed: could not persist transaction,u_2039,tr_pay_39
+2026-11-09T10:17:00Z,cdn,warning,image latency above baseline p95=950ms,,
+2026-11-09T10:17:05Z,cdn,warning,image latency above baseline p95=980ms,,
+2026-11-09T10:17:10Z,cdn,warning,slow image delivery from edge node,,

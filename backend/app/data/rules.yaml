@@ -1,0 +1,60 @@
+# Rulebook (specsheet §10). match = substrings in the message (lowercase).
+- id: db_pool_exhausted
+  match: ["connection pool", "too many connections", "timeout acquiring connection", "connections 90/100", "pool exhausted"]
+  applies_to: [database]
+  label: Database connection pool exhaustion
+  prior: 1.0
+  actions:
+    - {priority: 1, title: "Raise pool size / max_connections temporarily", detail: "Increase the pool limit on postgres-primary and restart the pooler, then watch active connections.", risk: low}
+    - {priority: 2, title: "Kill idle-in-transaction sessions", detail: "Terminate long idle-in-transaction sessions holding connections.", risk: medium}
+    - {priority: 3, title: "Find the leaking client (last deploy / slow query)", detail: "Check the most recent deploy and slow-query log for a client not returning connections.", risk: low}
+    - {priority: 4, title: "Add PgBouncer and per-service pool limits", detail: "Long-term: put a connection pooler in front of the database with per-service limits.", risk: low}
+- id: cache_failure
+  match: ["redis", "cache", "connection refused"]
+  applies_to: [cache]
+  label: Cache failure
+  prior: 0.9
+  actions:
+    - {priority: 1, title: "Restart redis-cache and check memory", detail: "Restart the cache node and confirm it accepts connections.", risk: low}
+    - {priority: 2, title: "Fail over to the cache replica", detail: "Point services at the replica while the primary is investigated.", risk: medium}
+    - {priority: 3, title: "Enable cache-bypass mode", detail: "Let services read through to the database with rate limits until the cache recovers.", risk: medium}
+- id: bad_deploy
+  match: ["deploy", "deployment", "new version", "release"]
+  applies_to: [service]
+  label: Bad deploy
+  prior: 0.85
+  actions:
+    - {priority: 1, title: "Roll back the last deploy", detail: "Roll back to the previous known-good version of the affected service.", risk: low}
+    - {priority: 2, title: "Check deploy diff for config changes", detail: "Review config and feature flags changed in the deploy.", risk: low}
+- id: oom
+  match: ["out of memory", "oom", "memory pressure", "heap"]
+  applies_to: [service]
+  label: Memory pressure / OOM
+  prior: 0.85
+  actions:
+    - {priority: 1, title: "Restart the affected service", detail: "Restart to clear memory pressure, then watch heap usage.", risk: low}
+    - {priority: 2, title: "Raise the memory limit", detail: "Increase the container memory limit for the affected service.", risk: low}
+- id: http_5xx
+  match: ["504", "502", "503", "gateway timeout", "5xx"]
+  applies_to: [gateway, service]
+  label: Downstream dependency outage
+  prior: 0.7
+  actions:
+    - {priority: 1, title: "Check the upstream service health", detail: "Verify the service behind the gateway is up and responding.", risk: low}
+    - {priority: 2, title: "Shed load / enable circuit breaker", detail: "Open the circuit breaker for the failing upstream to protect the gateway.", risk: medium}
+- id: login_failed
+  match: ["login failed", "login failure", "authentication failed"]
+  applies_to: [service]
+  label: Login failures
+  prior: 0.6
+  actions:
+    - {priority: 1, title: "Check auth-service upstream dependencies", detail: "Login failures are usually caused by the database or cache behind auth-service.", risk: low}
+    - {priority: 2, title: "Check for a credential-store outage", detail: "Confirm the identity store is reachable.", risk: low}
+- id: payment_failed
+  match: ["payment failed", "could not persist transaction", "charge failed"]
+  applies_to: [service]
+  label: Failed payments
+  prior: 0.7
+  actions:
+    - {priority: 1, title: "Check payment-service database writes", detail: "Failed payments usually mean the database behind payment-service is unavailable.", risk: low}
+    - {priority: 2, title: "Reconcile failed transactions", detail: "List failed charges and reconcile them once the database recovers.", risk: medium}

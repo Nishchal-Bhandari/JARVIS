@@ -1,0 +1,87 @@
+2026-11-09T10:15:00Z WARNING postgres-primary connections 90/100
+2026-11-09T10:15:00Z INFO web-app request served OK
+2026-11-09T10:15:02Z ERROR postgres-primary too many connections
+2026-11-09T10:15:04Z ERROR postgres-primary timeout acquiring connection from pool
+2026-11-09T10:15:07Z INFO web-app request served OK
+2026-11-09T10:15:11Z ERROR payment-service timeout acquiring connection from pool user=u_4821 trace=tr_9ac1
+2026-11-09T10:15:13Z ERROR payment-service timeout acquiring connection from pool user=u_4822 trace=tr_9ac2
+2026-11-09T10:15:14Z INFO web-app request served OK
+2026-11-09T10:15:19Z WARNING auth-service slow queries on postgres-primary trace=tr_77b1
+2026-11-09T10:15:21Z ERROR auth-service slow queries: p95 latency 1800ms
+2026-11-09T10:15:21Z INFO web-app request served OK
+2026-11-09T10:15:28Z INFO web-app request served OK
+2026-11-09T10:15:34Z ERROR auth-service login failed: upstream timeout trace=tr_77b2
+2026-11-09T10:15:34Z ERROR auth-service login failed: upstream timeout user=u_1000 trace=tr_login_0
+2026-11-09T10:15:35Z ERROR auth-service login failed: upstream timeout user=u_1001 trace=tr_login_1
+2026-11-09T10:15:35Z INFO web-app request served OK
+2026-11-09T10:15:36Z ERROR auth-service login failed: upstream timeout user=u_1002 trace=tr_login_2
+2026-11-09T10:15:37Z ERROR auth-service login failed: upstream timeout user=u_1003 trace=tr_login_3
+2026-11-09T10:15:38Z ERROR auth-service login failed: upstream timeout user=u_1004 trace=tr_login_4
+2026-11-09T10:15:39Z ERROR auth-service login failed: upstream timeout user=u_1005 trace=tr_login_5
+2026-11-09T10:15:40Z ERROR auth-service login failed: upstream timeout user=u_1006 trace=tr_login_6
+2026-11-09T10:15:41Z ERROR auth-service login failed: upstream timeout user=u_1007 trace=tr_login_7
+2026-11-09T10:15:42Z ERROR auth-service login failed: upstream timeout user=u_1008 trace=tr_login_8
+2026-11-09T10:15:42Z INFO web-app request served OK
+2026-11-09T10:15:43Z ERROR auth-service login failed: upstream timeout user=u_1009 trace=tr_login_9
+2026-11-09T10:15:44Z ERROR auth-service login failed: upstream timeout user=u_1010 trace=tr_login_10
+2026-11-09T10:15:45Z ERROR auth-service login failed: upstream timeout user=u_1011 trace=tr_login_11
+2026-11-09T10:15:46Z ERROR auth-service login failed: upstream timeout user=u_1012 trace=tr_login_12
+2026-11-09T10:15:47Z ERROR api-gateway 504 gateway timeout
+2026-11-09T10:15:47Z ERROR auth-service login failed: upstream timeout user=u_1013 trace=tr_login_13
+2026-11-09T10:15:48Z ERROR auth-service login failed: upstream timeout user=u_1014 trace=tr_login_14
+2026-11-09T10:15:49Z ERROR api-gateway 502 bad gateway from payment-service
+2026-11-09T10:15:49Z ERROR auth-service login failed: upstream timeout user=u_1015 trace=tr_login_15
+2026-11-09T10:15:49Z INFO web-app request served OK
+2026-11-09T10:15:50Z ERROR auth-service login failed: upstream timeout user=u_1016 trace=tr_login_16
+2026-11-09T10:15:51Z ERROR auth-service login failed: upstream timeout user=u_1017 trace=tr_login_17
+2026-11-09T10:15:52Z ERROR auth-service login failed: upstream timeout user=u_1018 trace=tr_login_18
+2026-11-09T10:15:53Z ERROR auth-service login failed: upstream timeout user=u_1019 trace=tr_login_19
+2026-11-09T10:15:55Z ERROR order-service timeout acquiring connection from pool
+2026-11-09T10:15:55Z ERROR payment-service payment failed: could not persist transaction user=u_2000 trace=tr_pay_0
+2026-11-09T10:15:56Z ERROR payment-service payment failed: could not persist transaction user=u_2001 trace=tr_pay_1
+2026-11-09T10:15:56Z INFO web-app request served OK
+2026-11-09T10:15:57Z ERROR payment-service payment failed: could not persist transaction user=u_2002 trace=tr_pay_2
+2026-11-09T10:15:58Z ERROR payment-service payment failed: could not persist transaction user=u_2003 trace=tr_pay_3
+2026-11-09T10:15:59Z ERROR payment-service payment failed: could not persist transaction user=u_2004 trace=tr_pay_4
+2026-11-09T10:16:00Z ERROR payment-service payment failed: could not persist transaction user=u_2005 trace=tr_pay_5
+2026-11-09T10:16:01Z ERROR payment-service payment failed: could not persist transaction user=u_2006 trace=tr_pay_6
+2026-11-09T10:16:02Z ERROR payment-service payment failed: could not persist transaction user=u_2007 trace=tr_pay_7
+2026-11-09T10:16:03Z ERROR payment-service payment failed: could not persist transaction user=u_2008 trace=tr_pay_8
+2026-11-09T10:16:03Z INFO web-app request served OK
+2026-11-09T10:16:04Z ERROR payment-service payment failed: could not persist transaction user=u_2009 trace=tr_pay_9
+2026-11-09T10:16:05Z ERROR payment-service payment failed: could not persist transaction user=u_2010 trace=tr_pay_10
+2026-11-09T10:16:06Z ERROR payment-service payment failed: could not persist transaction user=u_2011 trace=tr_pay_11
+2026-11-09T10:16:07Z ERROR payment-service payment failed: could not persist transaction user=u_2012 trace=tr_pay_12
+2026-11-09T10:16:08Z ERROR web-app checkout errors reported by users
+2026-11-09T10:16:08Z ERROR payment-service payment failed: could not persist transaction user=u_2013 trace=tr_pay_13
+2026-11-09T10:16:09Z ERROR payment-service payment failed: could not persist transaction user=u_2014 trace=tr_pay_14
+2026-11-09T10:16:10Z ERROR payment-service payment failed: could not persist transaction user=u_2015 trace=tr_pay_15
+2026-11-09T10:16:10Z INFO web-app request served OK
+2026-11-09T10:16:11Z ERROR payment-service payment failed: could not persist transaction user=u_2016 trace=tr_pay_16
+2026-11-09T10:16:12Z ERROR payment-service payment failed: could not persist transaction user=u_2017 trace=tr_pay_17
+2026-11-09T10:16:13Z ERROR payment-service payment failed: could not persist transaction user=u_2018 trace=tr_pay_18
+2026-11-09T10:16:14Z ERROR payment-service payment failed: could not persist transaction user=u_2019 trace=tr_pay_19
+2026-11-09T10:16:15Z ERROR payment-service payment failed: could not persist transaction user=u_2020 trace=tr_pay_20
+2026-11-09T10:16:16Z ERROR payment-service payment failed: could not persist transaction user=u_2021 trace=tr_pay_21
+2026-11-09T10:16:17Z ERROR payment-service payment failed: could not persist transaction user=u_2022 trace=tr_pay_22
+2026-11-09T10:16:17Z INFO web-app request served OK
+2026-11-09T10:16:18Z ERROR payment-service payment failed: could not persist transaction user=u_2023 trace=tr_pay_23
+2026-11-09T10:16:19Z ERROR payment-service payment failed: could not persist transaction user=u_2024 trace=tr_pay_24
+2026-11-09T10:16:20Z ERROR payment-service payment failed: could not persist transaction user=u_2025 trace=tr_pay_25
+2026-11-09T10:16:21Z ERROR payment-service payment failed: could not persist transaction user=u_2026 trace=tr_pay_26
+2026-11-09T10:16:22Z ERROR payment-service payment failed: could not persist transaction user=u_2027 trace=tr_pay_27
+2026-11-09T10:16:23Z ERROR payment-service payment failed: could not persist transaction user=u_2028 trace=tr_pay_28
+2026-11-09T10:16:24Z ERROR payment-service payment failed: could not persist transaction user=u_2029 trace=tr_pay_29
+2026-11-09T10:16:25Z ERROR payment-service payment failed: could not persist transaction user=u_2030 trace=tr_pay_30
+2026-11-09T10:16:26Z ERROR payment-service payment failed: could not persist transaction user=u_2031 trace=tr_pay_31
+2026-11-09T10:16:27Z ERROR payment-service payment failed: could not persist transaction user=u_2032 trace=tr_pay_32
+2026-11-09T10:16:28Z ERROR payment-service payment failed: could not persist transaction user=u_2033 trace=tr_pay_33
+2026-11-09T10:16:29Z ERROR payment-service payment failed: could not persist transaction user=u_2034 trace=tr_pay_34
+2026-11-09T10:16:30Z ERROR payment-service payment failed: could not persist transaction user=u_2035 trace=tr_pay_35
+2026-11-09T10:16:31Z ERROR payment-service payment failed: could not persist transaction user=u_2036 trace=tr_pay_36
+2026-11-09T10:16:32Z ERROR payment-service payment failed: could not persist transaction user=u_2037 trace=tr_pay_37
+2026-11-09T10:16:33Z ERROR payment-service payment failed: could not persist transaction user=u_2038 trace=tr_pay_38
+2026-11-09T10:16:34Z ERROR payment-service payment failed: could not persist transaction user=u_2039 trace=tr_pay_39
+2026-11-09T10:17:00Z WARNING cdn image latency above baseline p95=950ms
+2026-11-09T10:17:05Z WARNING cdn image latency above baseline p95=980ms
+2026-11-09T10:17:10Z WARNING cdn slow image delivery from edge node
