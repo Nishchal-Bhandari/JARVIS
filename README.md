@@ -85,6 +85,23 @@ run the `docker-compose.yml` stack on one small VM, but its free allowance
 is a trial credit, not a permanent free tier — Vercel + Render above is
 the permanent-free option.
 
+### Backend on Railway (works, but not free forever)
+
+Yes, the backend runs on Railway — `backend/railway.json` and
+`backend/Procfile` are in the repo. In Railway: New Project → Deploy from
+GitHub repo → pick JARVIS, set the service's **Root Directory to `backend`**,
+add variables `CORS_ORIGINS` (your Vercel URL), `SEED=42`, and optionally
+`ANTHROPIC_API_KEY` / `LLM_MODEL`. Railway gives you a public URL and sets
+`$PORT` itself. Then set Vercel's `NEXT_PUBLIC_API_URL` /
+`NEXT_PUBLIC_WS_URL` to that Railway URL, as in step 2 above.
+
+Cost warning: Railway has no permanent free tier for a running service.
+New accounts get a one-time $5 trial credit (30 days); after that the
+cheapest real option is Hobby at $5/month, and a small always-on service
+typically costs a few dollars above the included credit. Use Railway for
+the hackathon demo if you like it, but for a $0 long-term home, Render
+(step 1) is the better pick.
+
 ## Demo script (3 minutes)
 
 1. **Problem (20s):** a wall of raw alerts — login failures, slow APIs, failed payments.
