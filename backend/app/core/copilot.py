@@ -1,7 +1,7 @@
 """Copilot Q&A grounded in one incident's structured data (specsheet §12.3).
 No-LLM fallback: intent matching over the same JSON."""
 
-import os
+from .llm import complete
 
 
 def answer_question(incident: dict, question: str) -> dict:
@@ -50,35 +50,24 @@ def answer_question(incident: dict, question: str) -> dict:
             f"{impact.get('users_affected')} users affected."
         )
         based = ["root_cause", "impact"]
-    # LLM path (optional, fact-only, 15s timeout) — only if a key is set
-    if os.environ.get("ANTHROPIC_API_KEY") and os.environ.get("LLM_MODEL"):
-        try:
-            import anthropic
-
-            client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=15)
-            summary = {
-                k: incident.get(k)
-                for k in (
-                    "title",
-                    "severity",
-                    "root_cause",
-                    "impact",
-                    "timeline",
-                    "recommendations",
-                )
-            }
-            msg = client.messages.create(
-                model=os.environ["LLM_MODEL"],
-                max_tokens=400,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": "Answer ONLY from these incident facts; say 'unknown' otherwise.\n"
-                        f"Facts: {summary}\nQuestion: {question}",
-                    }
-                ],
-            )
-            return {"answer": msg.content[0].text, "based_on": based}
-        except Exception:
-            pass
+    # LLM path (optional, fact-only, 15s timeout) — only if a key is set.
+    # Uses OpenRouter; default model is free, so limited credits are safe.
+    summary = {
+        k: incident.get(k)
+        for k in (
+            "title",
+            "severity",
+            "root_cause",
+            "impact",
+            "timeline",
+            "recommendations",
+        )
+    }
+    llm_answer = complete(
+        "Answer ONLY from these incident facts; say 'unknown' otherwise.\n"
+        f"Facts: {summary}\nQuestion: {question}",
+        max_tokens=400,
+    )
+    if llm_answer:
+        return {"answer": llm_answer, "based_on": based}
     return {"answer": answer, "based_on": based}

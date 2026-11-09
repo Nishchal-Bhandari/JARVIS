@@ -21,7 +21,7 @@ services:
         # Replace with your Vercel URL after you deploy the frontend, e.g.
         # https://jarvis-xyz.vercel.app — then redeploy the API.
         value: http://localhost:3000
-      - key: ANTHROPIC_API_KEY
+      - key: OPENROUTER_API_KEY
         sync: false
       - key: LLM_MODEL
-        sync: false
+        value: meta-llama/llama-3.3-70b-instruct:free

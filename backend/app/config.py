@@ -16,8 +16,10 @@ class Settings(BaseSettings):
     tick_seconds: int = 2
     seed: int = 42
     cors_origins: str = "http://localhost:3000"
-    anthropic_api_key: str = ""
-    llm_model: str = ""
+    openrouter_api_key: str = ""
+    # Default is a free OpenRouter model; override with any model ID, e.g.
+    # "deepseek/deepseek-r1:free" or a paid model when credits allow.
+    llm_model: str = "meta-llama/llama-3.3-70b-instruct:free"
 
     # correlation weights
     W_TIME: float = 0.40

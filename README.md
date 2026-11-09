@@ -91,7 +91,7 @@ Yes, the backend runs on Railway — `backend/railway.json` and
 `backend/Procfile` are in the repo. In Railway: New Project → Deploy from
 GitHub repo → pick JARVIS, set the service's **Root Directory to `backend`**,
 add variables `CORS_ORIGINS` (your Vercel URL), `SEED=42`, and optionally
-`ANTHROPIC_API_KEY` / `LLM_MODEL`. Railway gives you a public URL and sets
+`OPENROUTER_API_KEY` / `LLM_MODEL` (free model by default). Railway gives you a public URL and sets
 `$PORT` itself. Then set Vercel's `NEXT_PUBLIC_API_URL` /
 `NEXT_PUBLIC_WS_URL` to that Railway URL, as in step 2 above.
 
@@ -166,8 +166,11 @@ root cause `postgres-primary`, confidence ≥ 0.70 (observed 0.78 live),
   offset (not wall-clock at ingest), so correlation and the timeline are
   speed-independent.
 - **No LLM key needed:** reports and Copilot fall back to a deterministic
-  template / intent matching. Set `ANTHROPIC_API_KEY` + `LLM_MODEL` for the
-  LLM paths (structured incident JSON only, never raw logs).
+  template / intent matching. Set `OPENROUTER_API_KEY` + `LLM_MODEL` for the
+  LLM paths (structured incident JSON only, never raw logs). The default
+  model is the free `meta-llama/llama-3.3-70b-instruct:free` on OpenRouter,
+  so limited credits are safe; other free options include
+  `deepseek/deepseek-r1:free` and `qwen/qwen-2.5-7b-instruct:free`.
 - **Docker was not verified in this environment** (no Docker daemon here);
   `docker compose up --build` is the intended one-command start — verify it
   on the demo machine before the pitch.

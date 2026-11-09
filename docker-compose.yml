@@ -9,8 +9,8 @@ services:
       - DATABASE_URL=sqlite:////app/jarvis.db
       - CORS_ORIGINS=http://localhost:3000
       - SEED=42
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - LLM_MODEL=${LLM_MODEL:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-meta-llama/llama-3.3-70b-instruct:free}
   web:
     build:
       context: ./frontend

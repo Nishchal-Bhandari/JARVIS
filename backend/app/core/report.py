@@ -2,7 +2,7 @@
 Never sends raw logs to the LLM; only the structured incident summary.
 Works with no API key."""
 
-import os
+from .llm import complete
 
 
 def template_report(incident: dict) -> str:
@@ -51,30 +51,16 @@ def template_report(incident: dict) -> str:
 
 def generate_report(incident: dict) -> tuple[str, str]:
     """Return (markdown, generated_by). LLM path only with a key, 15s timeout."""
-    key = os.environ.get("ANTHROPIC_API_KEY", "")
-    model = os.environ.get("LLM_MODEL", "")
-    if not key or not model:
-        return template_report(incident), "template"
-    try:
-        import anthropic
-
-        client = anthropic.Anthropic(api_key=key, timeout=15)
-        summary = {
-            k: incident.get(k)
-            for k in ("title", "severity", "root_cause", "impact", "timeline", "recommendations")
-        }
-        msg = client.messages.create(
-            model=model,
-            max_tokens=800,
-            messages=[
-                {
-                    "role": "user",
-                    "content": "Write an incident report from ONLY these facts; say 'unknown' otherwise. "
-                    "Sections: Summary, Root cause, Timeline, Impact, Recommended actions, Open questions.\n"
-                    f"{summary}",
-                }
-            ],
-        )
-        return msg.content[0].text, "llm"
-    except Exception:
-        return template_report(incident), "template"
+    summary = {
+        k: incident.get(k)
+        for k in ("title", "severity", "root_cause", "impact", "timeline", "recommendations")
+    }
+    text = complete(
+        "Write an incident report from ONLY these facts; say 'unknown' otherwise. "
+        "Sections: Summary, Root cause, Timeline, Impact, Recommended actions, Open questions.\n"
+        f"{summary}",
+        max_tokens=800,
+    )
+    if text:
+        return text, "llm"
+    return template_report(incident), "template"
