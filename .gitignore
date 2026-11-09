@@ -10,3 +10,4 @@ frontend/.env.local
 .ruff_cache/
 *.egg-info/
 !sample_data/*.log
+frontend/tsconfig.tsbuildinfo

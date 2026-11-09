@@ -1,0 +1,67 @@
+"use client";
+import { useRef, useState } from "react";
+import { api, API } from "@/lib/api";
+import { Card, CardTitle } from "@/components/ui/card";
+import { Button, GhostButton } from "@/components/ui/button";
+
+export default function Sources() {
+  const [result, setResult] = useState<{ accepted: number; rejected: number; errors: string[] } | null>(null);
+  const [scenario, setScenario] = useState("db_pool_exhaustion");
+  const [speed, setSpeed] = useState(5);
+  const [simStatus, setSimStatus] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onFile(f: File) {
+    const r = await api.upload(f);
+    setResult(r);
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-xl font-bold">Data sources</h1>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card>
+          <CardTitle>Upload a log file</CardTitle>
+          <p className="mt-1 text-sm text-muted">JSONL, CSV or raw log. Max 20 MB. Bad lines are skipped and counted.</p>
+          <input ref={fileRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
+          <div className="mt-3 rounded-lg border border-dashed border-border p-6 text-center">
+            <Button onClick={() => fileRef.current?.click()}>Choose file</Button>
+          </div>
+          {result && (
+            <p className="mt-3 text-sm">{result.accepted} accepted · {result.rejected} skipped{result.errors.length ? `. ${result.errors[0]}` : ""}</p>
+          )}
+        </Card>
+        <Card>
+          <CardTitle>API ingest</CardTitle>
+          <p className="mt-1 text-sm text-muted">Send events to the REST endpoint:</p>
+          <pre className="mt-3 overflow-auto rounded bg-raised p-3 font-mono text-xs">{`curl -X POST ${API}/api/v1/events \\
+  -H 'Content-Type: application/json' \\
+  -d '[{"service":"payment-service","severity":"error","message":"timeout acquiring connection from pool"}]'`}</pre>
+        </Card>
+        <Card>
+          <CardTitle>Simulator</CardTitle>
+          <div className="mt-3 space-y-3">
+            <label className="block text-sm">Scenario
+              <select value={scenario} onChange={(e) => setScenario(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-raised px-2 py-1">
+                <option value="db_pool_exhaustion">db_pool_exhaustion</option>
+                <option value="bad_deploy">bad_deploy</option>
+                <option value="cache_failure">cache_failure</option>
+              </select>
+            </label>
+            <div className="flex gap-2" role="group" aria-label="Speed">
+              {[1, 5, 10].map((s) => (
+                <button key={s} className={`rounded border px-3 py-1 text-sm ${speed === s ? "border-trace bg-trace-wash" : "border-border"}`} onClick={() => setSpeed(s)}>{s}×</button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={async () => { await api.simulatorStart(scenario, speed); setSimStatus("Simulator started"); }}>Start simulator</Button>
+              <GhostButton onClick={async () => { await api.simulatorStop(); setSimStatus("Simulator stopped"); }}>Stop</GhostButton>
+              <GhostButton onClick={async () => { await api.simulatorReset(); setSimStatus("All data cleared"); }}>Reset</GhostButton>
+            </div>
+            {simStatus && <p className="text-sm text-muted">{simStatus}</p>}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}

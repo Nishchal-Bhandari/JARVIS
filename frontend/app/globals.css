@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fallback tokens (design_system §11) — the v0 M.O.N.K.Y template was not
+   supplied, so these are the documented fallback values. */
+:root,
+.dark {
+  --background: 222 21% 7%;
+  --card: 220 20% 10%;
+  --raised: 221 19% 13%;
+  --border: 215 16% 20%;
+  --foreground: 210 20% 92%;
+  --muted-foreground: 215 14% 65%;
+  --accent: 217 84% 62%;
+  --radius: 0.625rem;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  /* Semantic status layer (design_system §3) */
+  --cause: #ff5a47;
+  --cause-wash: rgba(255, 90, 71, 0.14);
+  --cause-ink: #ff8a7a;
+  --affected: #f5a524;
+  --affected-wash: rgba(245, 165, 36, 0.14);
+  --affected-ink: #ffc766;
+  --steady: #3dd68c;
+  --steady-wash: rgba(61, 214, 140, 0.12);
+  --trace: #5b8def;
+  --trace-wash: rgba(91, 141, 239, 0.16);
+  --unmapped: #8b93a1;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Root-cause pulse ring — the only ambient animation (design_system §8). */
+@keyframes cause-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 90, 71, 0.45); }
+  100% { box-shadow: 0 0 0 12px rgba(255, 90, 71, 0); }
+}
+.cause-pulse { animation: cause-pulse 2.4s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .cause-pulse { animation: none; }
+}
